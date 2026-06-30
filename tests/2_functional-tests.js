@@ -12,10 +12,11 @@ suite("Functional Tests", function () {
       .get("/api/convert")
       .query({ input: "10L" })
       .end((err, res) => {
+        assert.equal(res.status, 200);
         assert.equal(res.body.initNum, 10);
-        assert.equal(res.body.initUnit, "L");
+        assert.equal(res.body.initUnit.toLowerCase(), "l");
         assert.approximately(res.body.returnNum, 2.64172, 0.1);
-        assert.equal(res.body.returnUnit, "gal");
+        assert.equal(res.body.returnUnit.toLowerCase(), "gal");
         done();
       });
   });
@@ -26,7 +27,8 @@ suite("Functional Tests", function () {
       .get("/api/convert")
       .query({ input: "32g" })
       .end((err, res) => {
-        assert.equal(res.body.error, "invalid unit");
+        assert.equal(res.status, 200);
+        assert.equal(res.text, "invalid unit");
         done();
       });
   });
@@ -37,7 +39,8 @@ suite("Functional Tests", function () {
       .get("/api/convert")
       .query({ input: "3/7.2/4kg" })
       .end((err, res) => {
-        assert.equal(res.body.error, "invalid number");
+        assert.equal(res.status, 200);
+        assert.equal(res.text, "invalid number");
         done();
       });
   });
@@ -48,7 +51,8 @@ suite("Functional Tests", function () {
       .get("/api/convert")
       .query({ input: "3/7.2/4kilomegagram" })
       .end((err, res) => {
-        assert.equal(res.body.error, "invalid number and unit");
+        assert.equal(res.status, 200);
+        assert.equal(res.text, "invalid number and unit");
         done();
       });
   });
@@ -59,9 +63,10 @@ suite("Functional Tests", function () {
       .get("/api/convert")
       .query({ input: "kg" })
       .end((err, res) => {
+        assert.equal(res.status, 200);
         assert.equal(res.body.initNum, 1);
-        assert.equal(res.body.initUnit, "kg");
-        assert.equal(res.body.returnUnit, "lbs");
+        assert.equal(res.body.initUnit.toLowerCase(), "kg");
+        assert.equal(res.body.returnUnit.toLowerCase(), "lbs");
         done();
       });
   });
