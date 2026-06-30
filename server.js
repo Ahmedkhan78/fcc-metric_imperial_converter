@@ -1,58 +1,58 @@
 "use strict";
 
 const express = require("express");
-const bodyParser = require("body-parser");
 const cors = require("cors");
-require("dotenv").config();
+const helmet = require("helmet");
+const dotEnv = require("dotenv").config();
 
 const apiRoutes = require("./routes/api.js");
 const fccTestingRoutes = require("./routes/fcctesting.js");
 const runner = require("./test-runner");
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Static files
-app.use("/public", express.static(process.cwd() + "/public"));
+app.use("/static", express.static("public"));
+app.use(cors({ origin: "*" })); //For FCC testing purposes only
 
-// CORS for FCC tests
-app.use(cors({ origin: "*" }));
+app.use(express.urlencoded({ extended: true }));
 
-// Body parser
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  helmet({
+    noSniff: true,
+    xssFilter: true,
+  }),
+);
 
-// Home route
 app.get("/", (req, res) => {
   res.sendFile(process.cwd() + "/views/index.html");
 });
 
-// FCC testing routes
+//For FCC testing purposes
 fccTestingRoutes(app);
 
-// ✅ IMPORTANT FIX: mount router correctly
-app.use("/api", apiRoutes);
+//Routing for API
+apiRoutes(app);
 
-// 404 handler
-app.use((req, res) => {
+//404 Not Found Middleware
+app.use((req, res, next) => {
   res.status(404).type("text").send("Not Found");
 });
 
-// Server start
-const port = process.env.PORT || 3000;
-
-app.listen(port, () => {
-  console.log("Listening on port " + port);
-
+//Start our server and tests!
+app.listen(PORT, () => {
+  console.log("Listening on port " + PORT);
   if (process.env.NODE_ENV === "test") {
     console.log("Running Tests...");
     setTimeout(() => {
       try {
         runner.run();
-      } catch (e) {
-        console.error("Tests failed to run:", e);
+      } catch (error) {
+        console.log("Tests are not valid:");
+        console.log(error);
       }
     }, 1500);
   }
 });
 
-module.exports = app;
+module.exports = app; //for testing
