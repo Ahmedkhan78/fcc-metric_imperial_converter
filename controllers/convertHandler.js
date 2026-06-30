@@ -20,11 +20,15 @@ class ConvertHandler {
   }
 
   getNum(input) {
+    if (!input) return "invalid number";
+
     const match = input.match(/^[\d./]*/)[0];
 
     if (!match) return 1;
 
-    if ((match.match(/\//g) || []).length > 1) return "invalid number";
+    if ((match.match(/\//g) || []).length > 1) {
+      return "invalid number";
+    }
 
     let num;
 
@@ -41,12 +45,13 @@ class ConvertHandler {
   }
 
   getUnit(input) {
+    if (!input) return "invalid unit";
+
     const match = input.match(/[a-zA-Z]+$/);
     if (!match) return "invalid unit";
 
     let unit = match[0];
 
-    // normalize
     unit = unit.toLowerCase();
 
     if (unit === "l") unit = "L";
