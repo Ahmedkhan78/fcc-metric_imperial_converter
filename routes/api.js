@@ -15,15 +15,14 @@ router.get("/convert", (req, res) => {
 
   const initNum = convertHandler.getNum(input);
   const initUnit = convertHandler.getUnit(input);
-
-  if (initUnit === "invalid unit") {
-    return res.json({ error: "invalid unit" });
+  if (initNum === "invalid number" && initUnit === "invalid unit") {
+    return res.json({ error: "invalid number and unit" });
   }
   if (initNum === "invalid number") {
     return res.json({ error: "invalid number" });
   }
-  if (initNum === "invalid number" && initUnit === "invalid unit") {
-    return res.json({ error: "invalid number and unit" });
+  if (initUnit === "invalid unit") {
+    return res.json({ error: "invalid unit" });
   }
 
   const returnNum = convertHandler.convert(initNum, initUnit);
