@@ -20,42 +20,40 @@ class ConvertHandler {
   }
 
   getNum(input) {
-    let match = input.match(/^[\d./]+/);
+    const match = input.match(/^[\d./]*/)[0];
 
     if (!match) return 1;
 
-    let numStr = match[0];
+    if ((match.match(/\//g) || []).length > 1) return "invalid number";
 
-    // invalid double fraction
-    if ((numStr.match(/\//g) || []).length > 1) {
-      return "invalid number";
-    }
+    let num;
 
-    let value;
-
-    if (numStr.includes("/")) {
-      const [a, b] = numStr.split("/");
-      value = parseFloat(a) / parseFloat(b);
+    if (match.includes("/")) {
+      const [a, b] = match.split("/");
+      num = parseFloat(a) / parseFloat(b);
     } else {
-      value = parseFloat(numStr);
+      num = parseFloat(match);
     }
 
-    if (isNaN(value)) return "invalid number";
+    if (isNaN(num)) return "invalid number";
 
-    return value;
+    return num;
   }
 
   getUnit(input) {
-    let match = input.match(/[a-zA-Z]+$/);
+    const match = input.match(/[a-zA-Z]+$/);
     if (!match) return "invalid unit";
 
     let unit = match[0];
 
-    if (unit.toLowerCase() === "l") unit = "L";
+    // normalize
+    unit = unit.toLowerCase();
 
-    if (!this.unitMap[unit]) return "invalid unit";
+    if (unit === "l") unit = "L";
 
-    return unit;
+    const valid = ["gal", "L", "mi", "km", "lbs", "kg"];
+
+    return valid.includes(unit) ? unit : "invalid unit";
   }
 
   getReturnUnit(initUnit) {
@@ -80,6 +78,8 @@ class ConvertHandler {
   }
 
   getString(initNum, initUnit, returnNum, returnUnit) {
+    const formatUnit = (u) => (u === "L" ? "L" : u.toLowerCase());
+
     return `${initNum} ${this.spellOutUnit(initUnit)} converts to ${returnNum} ${this.spellOutUnit(returnUnit)}`;
   }
 }
