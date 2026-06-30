@@ -7,7 +7,7 @@ const ConvertHandler = require("../controllers/convertHandler");
 const convertHandler = new ConvertHandler();
 
 router.get("/convert", (req, res) => {
-  const input = req.query.input || req.params.input;
+  const input = req.query.input;
 
   if (!input) {
     return res.json({ error: "invalid input" });
@@ -31,7 +31,7 @@ router.get("/convert", (req, res) => {
   const returnNum = convertHandler.convert(initNum, initUnit);
   const returnUnit = convertHandler.getReturnUnit(initUnit);
 
-  res.json({
+  return res.json({
     initNum,
     initUnit,
     returnNum,
